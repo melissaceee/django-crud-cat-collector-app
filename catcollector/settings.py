@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-(m$)intu3r4($8m=b^%o4^^hu0q@(_h+5lo@&@yx23)d&c8#n6'
+SECRET_KEY = 'django-insecure-9#z+++-nx6%m%0ep$47i=+wvv0gp_w_pfpj(kt0$l^*81(qm+2'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -76,8 +76,8 @@ WSGI_APPLICATION = 'catcollector.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'catcollector',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
