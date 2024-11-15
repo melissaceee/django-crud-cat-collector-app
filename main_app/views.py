@@ -1,35 +1,52 @@
-from django.shortcuts import render
-from .models import Cat
+from django.shortcuts import render, redirect
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
-
-# Import HttpResponse to send text-based responses
-from django.http import HttpResponse
+from .models import Cat
+from .forms import FeedingForm
 
 # Create your views here.
 
 def home(request):
-  return render(request, 'home.html')
+    return render(request, 'home.html')
+from .models import Cat
 
 def about(request):
-  return render(request, 'about.html')
+    return render(request, 'about.html')
 
+#Cats index
 def cat_index(request):
-  cats = Cat.objects.all()
-  return render(request, 'cats/index.html', {'cats':cats})
+    cats = Cat.objects.all()
+    return render(request, 'cats/index.html', {'cats': cats})
 
+#single cat view
 def cat_detail(request, cat_id):
-  cat = Cat.objects.get(id=cat_id)
-  return render(request, 'cats/detail.html', {'cat': cat})
+    cat = Cat.objects.get(id=cat_id)
+    feeding_form = FeedingForm()
+    return render(request, 'cats/detail.html', {
+        'cat': cat,
+        'feeding_form': feeding_form,
+        })
 
+
+#add-feeding
+def add_feeding(request, cat_id):
+    form = FeedingForm(request.POST)
+    if form.is_valid():
+        new_feeding = form.save(commit=False)
+        new_feeding.cat_id = cat_id
+        new_feeding.save()
+    return redirect('cat-detail', cat_id=cat_id)
+
+
+#Cat creat class
 class CatCreate(CreateView):
-  model = Cat
-  fields = "__all__"
-  success_url = '/cats/'
+    model = Cat
+    fields = "__all__"
+    # success_url = '/cats/'
 
 class CatUpdate(UpdateView):
-  model = Cat
-  fields = ['breed', 'description', 'age']
+    model = Cat
+    fields = ['breed', 'description', 'age']
 
 class CatDelete(DeleteView):
-  model = Cat
-  success_url = '/cats/'
+    model = Cat
+    success_url = '/cats/'
