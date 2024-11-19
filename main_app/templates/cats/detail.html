@@ -1,40 +1,44 @@
 {% extends 'base.html' %} 
 {% load static %} 
-
 {% block head %}
-<link rel="stylesheet" href="{% static 'css/cats/cat-detail.css?v=1.0' %}" />
+<link rel="stylesheet" href="{% static 'css/cats/cat-detail.css' %}" />
 {% endblock %} 
-
 {% block content %}
-<main class="cat-container">
+<section class="cat-container">
   <div class="cat-img">
-    <img src="{% static 'images/sk8r-boi-cat.svg' %}" alt="{{ cat.name|default:'A skater boy cat' }}" />
+    <img src="{% static 'images/sk8r-boi-cat.svg' %}" alt="A skater boy cat" />
   </div>
   <div class="cat-details">
-    <h1>{{ cat.name|default:"Unknown Cat" }}</h1>
+    <h1>{{ cat.name }}</h1>
     {% if cat.age > 0 %}
       <h2>A {{ cat.age }} year old {{ cat.breed }}</h2>
     {% else %}
       <h2>A {{ cat.breed }} kitten.</h2>
     {% endif %}
-    <p>{{ cat.description|default:"No description available." }}</p>
+    <p>{{ cat.description }}</p>
+
 
     <div class="cat-actions">
         <a href="{% url 'cat-update' cat.id %}" class="btn warn">Edit</a>
         <a href="{% url 'cat-delete' cat.id %}" class="btn danger">Delete</a>
     </div>
   </div>
-</main>
 
+</section>
 <div class="feedings-toy-container">
   <section class="feedings">
     <div class="subsection-title">
       <h2>Feedings</h2>
-      <img src="{% static 'images/cat-cone.svg' %}" alt="Cat cone illustration" />
-      <img src="{% static 'images/cat-onigiri.svg' %}" alt="Cat as onigiri illustration" />
-      <img src="{% static 'images/kitty-kabob.svg' %}" alt="Kitten kabob illustration" />
+      <img
+        src="{% static 'images/cat-cone.svg' %}"
+        alt="An ice cream cone cat"
+      />
+      <img src="{% static 'images/cat-onigiri.svg' %}" alt="A cat as onigiri" />
+      <img
+        src="{% static 'images/kitty-kabob.svg' %}"
+        alt="A kabob of kittens"
+      />
     </div>
-
     <h3>Add a Feeding</h3>
     <form
       action="{% url 'add-feeding' cat.id %}" 
@@ -46,7 +50,6 @@
       {{ feeding_form.as_p }}
       <button type="submit" class="btn submit">Add Feeding</button>
     </form>
-
     <h3>Past Feedings</h3>
     {% if cat.feeding_set.all.count %}
       <table>
@@ -59,17 +62,57 @@
         <tbody>
           {% for feeding in cat.feeding_set.all %}
           <tr>
-            <td>{{ feeding.date|date:"M d, Y" }}</td>
-            <td>{{ feeding.get_meal_display }}</td>
+            <td>{{feeding.date}}</td>
+            <td>{{feeding.get_meal_display}}</td>
           </tr>
           {% endfor %}
         </tbody>
       </table>
     {% else %}
-      <div class="empty-feedings">
-        <p>No feedings yet. Add one above!</p>
+      <div class="subsection-content">
+        <p>{{cat.name}} has not been fed!</p>
       </div>
     {% endif %}
+  </section>
+  <section class="toys">
+    <div class="subsection-title">
+      <h2>Toys</h2>
+      <img src="{% static 'images/string.svg' %}" alt="A ball of string" />
+      <img src="{% static 'images/mouse.svg' %}" alt="A mouse" />
+      <img src="{% static 'images/fish.svg' %}" alt="A fishy toy" />
+    </div>
+    <h3>{{ cat.name }}'s Toys</h3>
+  <div class="subsection-content">
+    {% if cat.toys.count %} 
+      {% for toy in cat.toys.all %}
+        <div class="toy-container">
+          <div class="color-block" style="background-color: {{ toy.color }}"></div>
+          <a href="{% url 'toy-detail' toy.id %}">
+            <p>A {{ toy.color }} {{ toy.name }}</p>
+          </a>
+          <form action="{% url 'remove-toy' cat.id toy.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Remove Toy</button>
+          </form>
+        </div>
+      {% endfor %} 
+    {% else %}
+      <p class="no-toys">{{cat.name}} doesn't have any toys!</p>
+    {% endif %}
+  </div>
+    <h3>Available Toys</h3>
+    <div class="subsection-content">
+      {% for toy in toys %}
+        <div class="toy-container">
+          <div class="color-block" style="background-color: {{ toy.color }}"></div>
+          <p>{{ toy.color }} {{ toy.name }}</p>
+          <form action="{% url 'associate-toy' cat.id toy.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn submit">Give Toy</button>
+          </form>
+        </div>
+      {% endfor %}
+    </div>
   </section>
 </div>
 {% endblock %}
